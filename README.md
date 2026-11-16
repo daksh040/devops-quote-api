@@ -13,3 +13,5 @@ A Java Spring Boot API used to demonstrate a DevOps pipeline.
 Git → Maven → Jenkins → Docker → Kubernetes
 
 Ansible will automate server configuration and application setup.
+
+Jenkins automatically tests and builds changes pushed to main.
