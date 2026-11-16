@@ -1,0 +1,5 @@
+---
+- name: Configure the Quote API server
+  hosts: app_servers
+  roles:
+    - quote_app

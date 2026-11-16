@@ -1,0 +1,10 @@
+[program:quote-api]
+command=/usr/bin/java -jar {{ app_directory }}/app.jar --server.port={{ app_port }}
+directory={{ app_directory }}
+autostart=true
+autorestart=true
+startsecs=5
+stopasgroup=true
+killasgroup=true
+stdout_logfile=/var/log/quote-api.log
+stderr_logfile=/var/log/quote-api-error.log

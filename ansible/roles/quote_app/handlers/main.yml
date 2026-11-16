@@ -1,0 +1,18 @@
+---
+- name: Reload supervisor configuration
+  ansible.builtin.command: supervisorctl reread
+  changed_when: false
+  listen: Restart quote application
+
+- name: Apply supervisor configuration
+  ansible.builtin.command: supervisorctl update
+  register: supervisor_update
+  changed_when: supervisor_update.stdout | length > 0
+  listen: Restart quote application
+
+- name: Restart application service
+  community.general.supervisorctl:
+    name: quote-api
+    state: restarted
+    config: /etc/supervisor/supervisord.conf
+  listen: Restart quote application

@@ -1,0 +1,9 @@
+FROM ubuntu:24.04
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends python3 supervisor \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /var/log/supervisor /var/run
+
+CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisor/supervisord.conf"]

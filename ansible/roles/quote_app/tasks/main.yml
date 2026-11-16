@@ -1,0 +1,45 @@
+---
+- name: Install Java runtime
+  ansible.builtin.apt:
+    name: openjdk-17-jre-headless
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Create application directory
+  ansible.builtin.file:
+    path: "{{ app_directory }}"
+    state: directory
+    mode: '0755'
+
+- name: Copy application JAR
+  ansible.builtin.copy:
+    src: "{{ app_jar_source }}"
+    dest: "{{ app_directory }}/app.jar"
+    mode: '0644'
+  notify: Restart quote application
+
+- name: Configure application service
+  ansible.builtin.template:
+    src: quote-api.conf.j2
+    dest: /etc/supervisor/conf.d/quote-api.conf
+    mode: '0644'
+  notify: Restart quote application
+
+- name: Apply pending service changes
+  ansible.builtin.meta: flush_handlers
+
+- name: Ensure application service is running
+  community.general.supervisorctl:
+    name: quote-api
+    state: started
+    config: /etc/supervisor/supervisord.conf
+
+- name: Wait for application to respond
+  ansible.builtin.uri:
+    url: "http://127.0.0.1:{{ app_port }}/health"
+    status_code: 200
+  register: health_result
+  until: health_result.status | default(0) == 200
+  retries: 30
+  delay: 2
